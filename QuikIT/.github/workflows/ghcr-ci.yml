@@ -3,9 +3,9 @@ name: GHCR Build and Push
 on:
   push:
     branches: [main, uat, dev]
-    paths:
-      - 'apps/**'
-      - 'packages/**'
+    # paths:
+    #   - 'apps/**'
+    #   - 'packages/**'
 
 jobs:
   build-and-push:
