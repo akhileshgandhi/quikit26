@@ -6,7 +6,7 @@ on:
     # This trigger will now catch any changes in the QuikIT folder
     paths:
       - 'QuikIT/**'
-      # - '.github/workflows/ghcr-ci.yml'
+      - '.github/workflows/main.yml'
 
 jobs:
   build-and-push:
