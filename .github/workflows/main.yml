@@ -1,0 +1,45 @@
+name: GHCR Build and Push
+
+on:
+  push:
+    branches: [ "main" ]
+    # paths:
+    #   - 'apps/**'
+    #   - 'packages/**'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        app: [quikit, admin, quikscale]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUBTOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          # Simplified tags: just latest and the commit hash
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ matrix.app }}:latest
+            ghcr.io/${{ github.repository }}/${{ matrix.app }}:${{ github.sha }}
+          # These are ONLY for the build phase. Real secrets are in GKE.
+          build-args: |
+            DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy
+            NEXTAUTH_URL=http://localhost:3000
