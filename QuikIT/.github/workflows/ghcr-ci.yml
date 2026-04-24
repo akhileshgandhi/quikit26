@@ -2,7 +2,7 @@ name: GHCR Build and Push
 
 on:
   push:
-    branches: [main, uat, dev]
+    branches: main
     # paths:
     #   - 'apps/**'
     #   - 'packages/**'
