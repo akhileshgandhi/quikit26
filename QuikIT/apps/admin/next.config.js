@@ -1,0 +1,56 @@
+const path = require("path");
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  // Docker / self-hosted build output. See docs/engineering/GCP_DEPLOYMENT.md.
+  output: "standalone",
+  transpilePackages: ["@quikit/ui", "@quikit/auth", "@quikit/shared", "@quikit/database", "@quikit/redis"],
+  experimental: {
+    outputFileTracingRoot: path.join(__dirname, "../../"),
+    outputFileTracingIncludes: {
+      "/*": ["../../package.json"],
+    },
+    serverActions: {
+      allowedOrigins: ["localhost:3005"],
+    },
+    // Wires up Sentry via apps/admin/instrumentation.ts on server startup.
+    instrumentationHook: true,
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.jsdelivr.net blob:",
+              "style-src 'self' 'unsafe-inline' fonts.googleapis.com rsms.me",
+              "font-src 'self' fonts.gstatic.com rsms.me",
+              "img-src 'self' data: blob: https:",
+              "connect-src 'self' https://*.sentry.io",
+              "frame-ancestors 'none'",
+            ].join("; "),
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;

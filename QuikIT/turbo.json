@@ -1,0 +1,51 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env.local"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "DATABASE_URL",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL",
+        "NODE_ENV",
+        "JWT_SIGNING_KEY",
+        "JWT_SIGNING_KEY_PUBLIC",
+        "QUIKIT_URL",
+        "QUIKIT_CLIENT_ID",
+        "QUIKIT_CLIENT_SECRET",
+        "QUIKSCALE_URL",
+        "ADMIN_URL"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "app/**",
+        "lib/**",
+        "components/**",
+        "pages/**",
+        "src/**",
+        "types/**",
+        "__tests__/**",
+        "vitest.config.ts",
+        "tsconfig.json",
+        "package.json",
+        "index.ts"
+      ],
+      "outputs": [],
+      "env": ["NODE_ENV"]
+    }
+  }
+}
